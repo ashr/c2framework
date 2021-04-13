@@ -12,11 +12,13 @@ empire-dropper encrypt - Encrypt text for the config.json file (API Username and
 empire-dropper create listenertype listenername stagertype Option1=Option1Value Option2=Option2Value - Create an empire listener, generate stager of type using specified parameters and invoke
 
 Staging windows/launcher_bat:
+
 empire-dropper create http lname1 windows/launcher_bat
 
 ![go9n6-d0yp8](https://user-images.githubusercontent.com/171286/114510025-79c43180-9c36-11eb-9b2c-c6e65d287cd2.gif)
 
 Staging windows/csharp_exe:
+
 empire-dropper create http lname2 windows/csharp_exe
 
 ![empire-dropper-csharp](https://user-images.githubusercontent.com/171286/114545757-a1c68b80-9c5c-11eb-837e-d046c822a6a6.gif)
