@@ -1,0 +1,9 @@
+﻿{"Config":
+    {
+        "EnableProxy":"0",
+        "ProxyServer":"http://0.0.0.0:8080",
+        "EmpireAPIEndpoint":"https://0.0.0.0:1337",
+        "EmpireAPIUsername":"bSGqmywRmOVaeemCaNw+XK6h8rU8D0TW1jLRVLxbTadTBVeRHiYmHNEe1REtdkHa",
+        "EmpireAPIPassword":"4wev5rA42WQw2wdG+mg6jN26B9wDgDLmtTt+dio0V0CuvcZGwZj9RjtlDfgXRrGZ"        
+    }
+}
