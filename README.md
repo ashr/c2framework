@@ -11,6 +11,8 @@ empire-dropper create listenertype listenername stagertype Option1=Option1Value 
 
 Currently only support windows/launcher_bat, currently testing windows/csharp_exe, but I've had to make a change to the stager code in Empire for the API to return the base64 data of the generated Zipfile instead of just the file name. I'll log an issue at Empire devs at some point to discuss this.
 
+![go9n6-d0yp8](https://user-images.githubusercontent.com/171286/114510025-79c43180-9c36-11eb-9b2c-c6e65d287cd2.gif)
+
 TODO:
 Empire 
 - In memory payload loading and execution for all stagers
