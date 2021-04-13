@@ -25,12 +25,19 @@ empire-dropper create http lname2 windows/csharp_exe
 
 For windows/csharp_exe I had to modify Empire API (Which I will chat to the empire devs to), the API only returns the path to the CS project instead of the base64 of the zip file, but it's very simple to enable this yourself:
 
-Edit ./lib/stagers/windows/csharp_exe.py in the root Empire source directory and replace 'return outfile' with
+Edit ./lib/stagers/windows/csharp_exe.py in the root Empire source directory and replace 
 
-zipFile = open(outfile+".zip", 'rb')
-zip_read = zipFile.read()
+
+    return outfile
  
-return zip_read
+
+with
+
+
+    zipFile = open(outfile+".zip", 'rb')
+    zip_read = zipFile.read()
+ 
+    return zip_read
 
 ![image](https://user-images.githubusercontent.com/171286/114546417-69737d00-9c5d-11eb-98c8-d07da7276380.png)
 
