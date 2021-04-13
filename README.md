@@ -13,6 +13,8 @@ Currently only support windows/launcher_bat, currently testing windows/csharp_ex
 
 ![go9n6-d0yp8](https://user-images.githubusercontent.com/171286/114510025-79c43180-9c36-11eb-9b2c-c6e65d287cd2.gif)
 
+Default Username and Password in the config.json file is 'username' and 'password'. If you set up your Empire API using those creds it should work after changing the IP to the API of Empire. If you do use different creds, encrypt them with 'empire-dropper encrypt mynewpassword' and pop into config.json.
+
 TODO:
 Empire 
 - In memory payload loading and execution for all stagers
